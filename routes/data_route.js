@@ -41,25 +41,4 @@ request(options, function(error, response, body) {
     }
 });
 */
-// get json data 
-data_router.post('/', async(req, res) => {
-    var ID = req.body.ID;
-    var PassWord = req.body.PassWord;
-    var Info = req.body.Info;
-
-    // 삽입을 수행하는 sql문.
-
-    console.log("Connected!");
-    var sql = "INSERT INTO user (ID, PassWord, Info) VALUES (?)";
-    var values = [
-        ID, PassWord, Info
-    ];
-
-    await conn.query(sql, [values], function(err, result) {
-        if (err) throw err;
-        console.log("Number of records inserted: " + result.affectedRows);
-    });
-
-    res.send(req.body);
-});
 module.exports = data_router;
