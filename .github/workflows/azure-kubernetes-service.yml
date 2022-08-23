@@ -35,7 +35,7 @@ on:
 
 env:
   AZURE_CONTAINER_REGISTRY: "iclinicacr"
-  CONTAINER_NAME: "trvel-app"
+  CONTAINER_NAME: "travel-app"
   RESOURCE_GROUP: "iclinicK8sResourceGroup"
   CLUSTER_NAME: "iclinicK8sCluster"
   IMAGE_PULL_SECRET_NAME: "acr-pull-secret"
