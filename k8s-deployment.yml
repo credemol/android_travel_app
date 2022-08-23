@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: @K8S_RESOURCE_NAME@-@DEPLOY_VERSION@
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: travel-app
+      version: 1.0
+  template:
+    metadata:
+      labels:
+        app: travel-app
+        version: 1.0
+        type: frontend
+        provider: iclinic
+    spec:
+      nodeSelector:
+        agentpool: production
+      containers:
+        - name: @K8S_RESOURCE_NAME@
+          image: iclinicacr.azurecr.io/travel-app
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: travel-config

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: travel-config
+  namespace: mentoring
+data:
+  TRAVEL_DB_HOST: mysql
