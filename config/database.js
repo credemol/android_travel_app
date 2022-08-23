@@ -8,8 +8,8 @@ module.exports = {
 */
 //it use when you work on your aws rds.
 module.exports = {
-    host: 'your host',
-    user: 'your id',
-    password: 'your pw',
-    database: 'your database'
+    host: process.env.TRAVEL_DB_HOST || 'localhost',
+    user: process.env.TRAVEL_DB_USER || 'root',
+    password: process.env.TRAVEL_DB_PASSWORD || 'secretpassword',
+    database: process.env.TRAVEL_DB_DATABASE || 'travel_app'
 };

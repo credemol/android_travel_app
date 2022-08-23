@@ -1,0 +1,102 @@
+= Overview
+
+== OPEN API
+
+* https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15021141
+
+Service Key: LtmQ0XlIhcuHS4ZTGlZ8o6%2F2VPGZuMXRTINlK5GC50X2VbRKo%2Bo5MG5rsBzgDZhvYcTkYd4nqyaQ%2Fkw4mvN6Sw%3D%3D
+
+URL: http://api.data.go.kr/openapi/tn_pubr_public_trrsrt_api
+
+
+== Setting up
+
+=== MySQL
+
+----
+helm -n mentoring install mysql \
+  --set auth.rootPassword=secretpassword,auth.database=travel_app \
+    bitnami-azure/mysql
+
+NAME: mysql
+LAST DEPLOYED: Tue Aug 23 10:44:02 2022
+NAMESPACE: mentoring
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+CHART NAME: mysql
+CHART VERSION: 8.8.16
+APP VERSION: 8.0.27
+
+** Please be patient while the chart is being deployed **
+
+Tip:
+
+  Watch the deployment status using the command: kubectl get pods -w --namespace mentoring
+
+Services:
+
+  echo Primary: mysql.mentoring.svc.cluster.local:3306
+
+Execute the following to get the administrator credentials:
+
+  echo Username: root
+  MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace mentoring mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode)
+
+To connect to your database:
+
+  1. Run a pod that you can use as a client:
+
+      kubectl run mysql-client --rm --tty -i --restart='Never' --image  marketplace.azurecr.io/bitnami/mysql:8.0.27-debian-10-r35 --namespace mentoring --command -- bash
+
+  2. To connect to primary service (read/write):
+
+      mysql -h mysql.mentoring.svc.cluster.local -uroot -p"$MYSQL_ROOT_PASSWORD"
+
+
+
+To upgrade this helm chart:
+
+  1. Obtain the password as described on the 'Administrator credentials' section and set the 'root.password' parameter as shown below:
+
+      ROOT_PASSWORD=$(kubectl get secret --namespace mentoring mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode)
+      helm upgrade --namespace mentoring mysql bitnami/mysql --set auth.rootPassword=$ROOT_PASSWORD
+
+----
+
+
+=== Port forward
+
+[source,shellscript]
+----
+$ km port-forward svc/mysql 3306:3306
+----
+
+[source,sql]
+----
+CREATE TABLE travel_info (
+    num INT AUTO_INCREMENT PRIMARY KEY,
+    travel_Nm VARCHAR(255),
+    travel_location VARCHAR(255),
+    travel_info VARCHAR(255)
+);
+
+ALTER TABLE travel_info
+RENAME COLUMN travel_locatioin TO travel_location;
+
+INSERT INTO travel_info (travel_Nm, travel_location, travel_info)
+VALUES
+    ('대전광역시 1', '대전광역시 중구 1', '좋은 곳 1'),
+    ('대전광역시 2', '대전광역시 중구 2', '좋은 곳 2');
+----
+
+== Application
+
+----
+npm install
+----
+
+
+
+
