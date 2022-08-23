@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: @K8S_RESOURCE_NAME@-@DEPLOY_VERSION@
+  name: travel-app
+  namespace: mentoring
 spec:
   replicas: 1
   selector:
@@ -13,13 +14,13 @@ spec:
       labels:
         app: travel-app
         version: 1.0
-        type: frontend
+        type: backend
         provider: iclinic
     spec:
       nodeSelector:
-        agentpool: production
+        agentpool: qc2nodes
       containers:
-        - name: @K8S_RESOURCE_NAME@
+        - name: travel-app
           image: iclinicacr.azurecr.io/travel-app
           imagePullPolicy: Always
           ports:
