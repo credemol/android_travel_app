@@ -99,5 +99,31 @@ node index.js
 ----
 
 
+== Expose Deployment
+
+----
+km expose deployment travel-app
+
+km get svc
+km port-forward svc/travel-app 3000:3000
+----
+
+== Ingress
+
+----
+$ helm repo add nginx-stable https://helm.nginx.com/stable
+$ helm repo update
+$ helm install mentoring-ingress nginx-stable/nginx-ingress --namespace mentoring --set controller.ingressClass=mentoring-nginx
+
+NAME: mentoring-ingress
+LAST DEPLOYED: Tue Aug 23 16:21:28 2022
+NAMESPACE: mentoring
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+The NGINX Ingress Controller has been installed.
+----
+
 
 

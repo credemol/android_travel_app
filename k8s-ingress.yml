@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mentoring-ingress
+  namespace: mentoring
+  annotations:
+    kubernetes.io/ingress.class: mentoring-nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: mentoring-nginx
+
+  rules:
+    - host: travel-app.iclinicemr.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: travel-app
+                port:
+                  number: 3000
+            pathType: Prefix
+            path: /
+
+
