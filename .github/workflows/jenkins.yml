@@ -23,7 +23,7 @@ jobs:
       - name: Trigger Jenkins Build
         uses: fjogeleit/http-request-action@v1
         with:
-          url: 'https://jenkins-aks.iclinicemr.com/job/patient-qc2/build?token=${{ secrets.JENKINS_TOKEN }}'
+          url: 'https://jenkins-aks.iclinicemr.com/job/travel-app/build?token=${{ secrets.JENKINS_TOKEN }}'
           username: $${ secrets.JENKINS_USER }}
           password: ${{ secrets.JENKINS_PASSWORD }}
           method: 'GET'
