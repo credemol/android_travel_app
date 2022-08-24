@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-travel-app
+  namespace: mentoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-travel-app
+#      version: 1.0
+  template:
+    metadata:
+      labels:
+        app: my-travel-app
+#        version: 1.0
+        type: backend
+        provider: iclinic
+    spec:
+#      nodeSelector:
+#        agentpool: qc2nodes
+      containers:
+        - name: my-travel-app
+          image: iclinicacr.azurecr.io/my-travel-app:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: travel-config
