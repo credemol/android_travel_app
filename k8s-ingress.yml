@@ -20,5 +20,14 @@ spec:
                   number: 3000
             pathType: Prefix
             path: /
-
+    - host: my-travel-app.iclinicemr.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: my-travel-app
+                port:
+                  number: 3000
+            pathType: Prefix
+            path: /
 
