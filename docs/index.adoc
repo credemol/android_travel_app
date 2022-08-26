@@ -1,10 +1,86 @@
 = Overview
 
+== Demo
+
+=== Development environment
+----
+alias | grep km
+kubectl -n mentoring get svc
+kubectl -n mentoring port-forward svc/mysql 3306:3306
+
+node index.js
+----
+
+link:http://localhost:3000/local/1[]
+
+=== Runtime Environment
+
+----
+kubectl -n mentoring get pod
+kubectl -n mentoring get depoyment
+kubectl -n mentoring exec -it deployment/travel-app -- /bin/sh
+
+# printenv | grep TRAVEL_DB
+# exit
+----
+
+== The Twelve Factors
+
+link:https://12factor.net/[The Twelve Factors]
+
+.database.js
+[source,javascript]
+----
+include::../config/database.js[lines=9..15]
+----
+
+== Application Data
+
+=== Set up MySql
+
+==== Install MySql Server
+----
+helm -n mentoring install mysql \
+  --set auth.rootPassword=secretpassword,auth.database=travel_app \
+    bitnami-azure/mysql
+----
+
+==== Create table
+
+[source,sql]
+----
+CREATE TABLE travel_info (
+    num INT AUTO_INCREMENT PRIMARY KEY,
+    travel_Nm VARCHAR(255),
+    travel_location VARCHAR(255),
+    travel_info VARCHAR(255)
+);
+----
+
+=== Save travel data into local files
+
+Total count : 745
+----
+mkdir tmp
+cd tmp
+
+SVC_KEY=USbFXIJI19poYJaAAvHEIuy69v7JTyE5UQWLdh%2FO4vt%2FXLcda%2F50oPbex%2F9l2M3YMmguSWmJoNfCpDiGli4uwA%3D%3D
+
+echo {1..8} | tr ' ' '\n' | xargs -I {} curl "http://api.data.go.kr/openapi/tn_pubr_public_trrsrt_api?serviceKey=${SVC_KEY}&pageNo={}&numOfRows=100&type=json" -o travel_data_{}.json
+----
+
+Convert Travel Json data to CSV or TSV
+----
+ echo {1..8} | tr ' ' '\n' | while read x; do jq -r '.response.body.items[] | [.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @csv' travel_data_$x.json > travel_data_$x.csv ; done
+
+ echo {1..8} | tr ' ' '\n' | while read x; do jq -r '.response.body.items[] | [.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @tsv' travel_data_$x.json > travel_data_$x.tsv ; done
+----
+
 == OPEN API
 
 * https://www.data.go.kr/tcs/dss/selectApiDataDetailView.do?publicDataPk=15021141
 
-Service Key: LtmQ0XlIhcuHS4ZTGlZ8o6%2F2VPGZuMXRTINlK5GC50X2VbRKo%2Bo5MG5rsBzgDZhvYcTkYd4nqyaQ%2Fkw4mvN6Sw%3D%3D
+Service Key: USbFXIJI19poYJaAAvHEIuy69v7JTyE5UQWLdh/O4vt/XLcda/50oPbex/9l2M3YMmguSWmJoNfCpDiGli4uwA==
 
 URL: http://api.data.go.kr/openapi/tn_pubr_public_trrsrt_api
 
@@ -90,6 +166,29 @@ VALUES
     ('대전광역시 1', '대전광역시 중구 1', '좋은 곳 1'),
     ('대전광역시 2', '대전광역시 중구 2', '좋은 곳 2');
 ----
+
+=== Fetch Travel data
+
+Total count : 745
+----
+echo {1..8} | tr ' ' '\n' | xargs -I {} curl "http://api.data.go.kr/openapi/tn_pubr_public_trrsrt_api?serviceKey=USbFXIJI19poYJaAAvHEIuy69v7JTyE5UQWLdh%2FO4vt%2FXLcda%2F50oPbex%2F9l2M3YMmguSWmJoNfCpDiGli4uwA%3D%3D&pageNo={}&numOfRows=100&type=json" -o travel_data_{}.json
+----
+
+----
+#cat travel_info_2.json | jq '.response.body.items[]' | jq -r '[.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @csv' > travel_info_2.csv
+
+# jq '.response.body.items[] | [.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @csv' travel_data_1.json
+
+ echo {1..8} | tr ' ' '\n' | while read x; do jq -r '.response.body.items[] | [.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @csv' travel_data_$x.json > travel_data_$x.csv ; done
+
+ echo {1..8} | tr ' ' '\n' | while read x; do jq -r '.response.body.items[] | [.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @tsv' travel_data_$x.json > travel_data_$x.tsv ; done
+
+
+ echo {1..8} | tr ' ' '\n' | while read x; do jq -r '.response.body.items[] | [.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @tsv' travel_data_$x.json | sed $'s/(.*)\t(.*)\t(.*)/INSERT INTO travle_info (travel_Nm, travel_location, travel_info) VALUES('"'"'$1'"'"', '"'"'$2'"'"', '"'"'$3'"'"');/g' > travel_data_$x.sql ; done
+
+ echo {1..8} | tr ' ' '\n' | while read x; do jq -r '.response.body.items[] | [.trrsrtNm,.rdnmadr,.trrsrtIntrcn] | @tsv' travel_data_$x.json | sed 's/(.*)\t(.*)\t(.*)\n/INSERT INTO travle_info (travel_Nm, travel_location, travel_info) VALUES('"'"'$1'"'"', '"'"'$2'"'"', '"'"'$3'"'"');/g' > travel_data_$x.sql ; done
+----
+
 
 == Application
 
